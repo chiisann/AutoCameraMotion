@@ -17,25 +17,34 @@ if "bpy" in locals():
     imp.reload(create_camera_pass)
 else:
     from . import create_camera_pass
-
+    
 import bpy
 
-def menu_fn(self, context):
-    self.layout.separator()
-    self.layout.operator(create_camera_pass.ORIGINAL_OT_CreateCameraPass.bl_idname)
+class ORIGINAL_PT_CreateCameraPass(bpy.types.Panel):
+
+    bl_label ="Create Object Camera"
+    bl_space_type = "VIEW_3D"
+    bl_region_type ="UI"
+    bl_category = "CameraPass"
+    bl_context = "objectmode"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+
+        layout.label(text="button")
+        layout.operator(create_camera_pass.ORIGINAL_OT_CreateCameraPass.bl_idname, text="Create Camera Pass")
 
 classes = [
-    create_camera_pass.ORIGINAL_OT_CreateCameraPass,
+    ORIGINAL_PT_CreateCameraPass,
 ]
 
 def register():
     for c in classes:
         bpy.utils.register_class(c)
-    bpy.types.VIEW3D_MT_object.append(menu_fn)
     print("START")
 
 def unregister():
-    bpy.types.VIEW3D_MT_object.remove(menu_fn)
     for c in classes:
         bpy.utils.unregister_class(c)
         print("REMOVED")

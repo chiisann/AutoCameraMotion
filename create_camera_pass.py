@@ -22,22 +22,6 @@ class ORIGINAL_OT_CreateCameraPass(bpy.types.Operator):
                 vec_r*np.cos(vec_theta)))
             return vec_co
 
-        # すべての選択を解除
-        def deselect():
-            for obj in context.selected_objects:
-                obj.select_set(False)
-        
-        # パスに追従
-        # object: パスに添わせる要素
-        # curve: パス
-        def followPass(object, curve):
-            deselect()
-            object.parent = curve
-            curve.select_set(True)
-            object.select_set(True)
-            bpy.context.view_layer.objects.active = curve
-            bpy.ops.object.parent_set(type="FOLLOW")
-
         # ===========================================
         #
         # Create new Collection
@@ -94,13 +78,10 @@ class ORIGINAL_OT_CreateCameraPass(bpy.types.Operator):
         camera_follow_constraint = camera_obj.constraints.new(type='FOLLOW_PATH')
         camera_follow_constraint.target = camera_pass_obj
 
-        
-        
+     
         # カメラの注視点をオブジェクトに設定, アクティブカメラに設定
         target_obj = bpy.data.objects.new("target_object", None) 
         newCol.objects.link(target_obj)
-        # target_obj.location = selected_obj[0].location
-        # followPass(target_obj, target_pass_obj)
         target_follow_constraint = target_obj.constraints.new(type='FOLLOW_PATH')
         target_follow_constraint.target = target_pass_obj
         camera_target_constraint = camera_obj.constraints.new(type='TRACK_TO')
