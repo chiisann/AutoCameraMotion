@@ -28,16 +28,23 @@ class ORIGINAL_PT_CreateCameraPass(bpy.types.Panel):
     bl_category = "CameraPass"
     bl_context = "objectmode"
 
+    def draw_header(self, context):
+        layout = self.layout
+        layout.label(text="", icon="PLUGIN")
+
     def draw(self, context):
         layout = self.layout
-        scene = context.scene
-
-        layout.label(text="button")
         layout.operator(create_camera_pass.ORIGINAL_OT_CreateCameraPass.bl_idname, text="Create Camera Pass")
 
 classes = [
     ORIGINAL_PT_CreateCameraPass,
+    create_camera_pass.ORIGINAL_OT_CreateCameraPass,
 ]
+
+
+# ------------------------------------------------------------------------
+# register and unregister functions
+# ------------------------------------------------------------------------
 
 def register():
     for c in classes:

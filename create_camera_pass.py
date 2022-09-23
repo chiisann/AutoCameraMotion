@@ -69,23 +69,46 @@ class ORIGINAL_OT_CreateCameraPass(bpy.types.Operator):
             target_pass_obj.bezier_points[cnt].handle_right = p.location + vec2
             cnt += 1
 
+        #
+        # 各オブジェクトの追加
+        #
         camera_pass_obj = bpy.data.objects.new("Camera_pass", camera_pass_data) 
         newCol.objects.link(camera_pass_obj)    # コレクションにcurveをリンク
 
         target_pass_obj = bpy.data.objects.new("target_pass", target_pass_data) 
         newCol.objects.link(target_pass_obj)
-        # followPass(camera_obj, camera_pass_obj) # カメラをカーブに追従
+
+        # カメラの注視点をオブジェクトに設定, アクティブカメラに設定
+        target_obj = bpy.data.objects.new("target_object", None) # empty
+        newCol.objects.link(target_obj)
+
+        #
+        # コンストラクタの設定
+        #
+        # カメラをカーブに追従
         camera_follow_constraint = camera_obj.constraints.new(type='FOLLOW_PATH')
         camera_follow_constraint.target = camera_pass_obj
+        camera_follow_constraint.use_fixed_location = True
 
-     
-        # カメラの注視点をオブジェクトに設定, アクティブカメラに設定
-        target_obj = bpy.data.objects.new("target_object", None) 
-        newCol.objects.link(target_obj)
-        target_follow_constraint = target_obj.constraints.new(type='FOLLOW_PATH')
-        target_follow_constraint.target = target_pass_obj
+        # frame_num = 0
+        # bpy.context.scene.frame_set(frame_num)
+        # camera_follow_constraint.offset.keyframe_insert()
+        
+
+
+        # カメラの注視点をemptyに設定
         camera_target_constraint = camera_obj.constraints.new(type='TRACK_TO')
         camera_target_constraint.target = target_obj
+        
+
+        print(camera_target_constraint)
+        print("bbb")
+
+        # target object(empty)のコンストラクタ
+        target_follow_constraint = target_obj.constraints.new(type='FOLLOW_PATH')
+        target_follow_constraint.target = target_pass_obj
+        target_follow_constraint.use_fixed_location  = True
+        
 
         # コンストレイントの各種設定
         # パスアニメーション
