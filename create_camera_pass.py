@@ -13,7 +13,7 @@ class ORIGINAL_OT_CreateCameraPass(bpy.types.Operator):
     def execute(self, context):
         # Vector 生成
         def createVector(object):
-            vec_r = min(object.scale[0], object.scale[1], object.scale[2]) * random.uniform(1.0, 3.0)
+            vec_r = min(object.scale[0], object.scale[1], object.scale[2]) * random.uniform(3.0, 10.0)
             vec_theta = random.uniform(0.0, np.pi)
             vec_phi = random.uniform(0.0, 2.0*np.pi-0.0001)
             vec_co = Vector(
@@ -39,6 +39,7 @@ class ORIGINAL_OT_CreateCameraPass(bpy.types.Operator):
         camera_data = bpy.data.cameras.new(name='Camera')
         camera_obj = bpy.data.objects.new("Camera", camera_data)
         newCol.objects.link(camera_obj)
+        bpy.context.scene.camera = camera_obj
 
         #
         # Create curve
@@ -89,25 +90,26 @@ class ORIGINAL_OT_CreateCameraPass(bpy.types.Operator):
         camera_follow_constraint = camera_obj.constraints.new(type='FOLLOW_PATH')
         camera_follow_constraint.target = camera_pass_obj
         camera_follow_constraint.use_fixed_location = True
-
-        # frame_num = 0
-        # bpy.context.scene.frame_set(frame_num)
-        # camera_follow_constraint.offset.keyframe_insert()
-        
-
+        # keyframe挿入
+        camera_follow_constraint.offset_factor = 0
+        camera_follow_constraint.keyframe_insert(data_path = "offset_factor", frame = int(0))
+        camera_follow_constraint.offset_factor = 1
+        camera_follow_constraint.keyframe_insert(data_path = "offset_factor", frame = int(120))
 
         # カメラの注視点をemptyに設定
         camera_target_constraint = camera_obj.constraints.new(type='TRACK_TO')
         camera_target_constraint.target = target_obj
         
 
-        print(camera_target_constraint)
-        print("bbb")
-
         # target object(empty)のコンストラクタ
         target_follow_constraint = target_obj.constraints.new(type='FOLLOW_PATH')
         target_follow_constraint.target = target_pass_obj
         target_follow_constraint.use_fixed_location  = True
+        # keyframe
+        target_follow_constraint.offset_factor = 0
+        target_follow_constraint.keyframe_insert(data_path = "offset_factor", frame = int(0))
+        target_follow_constraint.offset_factor = 1
+        target_follow_constraint.keyframe_insert(data_path = "offset_factor", frame = int(120))
         
 
         # コンストレイントの各種設定
